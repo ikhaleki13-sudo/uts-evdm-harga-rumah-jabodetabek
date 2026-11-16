@@ -16,7 +16,7 @@ library(scales)     # format angka (comma)
 cari <- list.files(pattern = "^jabodetabek_house_price.*\\.csv$", ignore.case = TRUE)
 file_path <- if (length(cari) > 0) cari[1] else "jabodetabek_house_price.csv"
 
-# Fungsi bantu
+# Fungsi bantu interpretasi dan statistik
 kotak <- function(judul, isi) {
   div(class = "kotak-interpretasi",
       strong(paste0("Interpretasi ", judul, ": ")), isi)
@@ -97,7 +97,7 @@ ui <- fluidPage(
       pre { font-size:13px; background:#f8fafc; border:1px solid #d8e2dc; border-radius:10px; }
     "))
   ),
-  
+
   div(class = "hero",
       div(class = "label-atas", "UTS EKSPLORASI DAN VISUALISASI DATA MULTIVARIAT"),
       h1("Harga Rumah Jabodetabek"),
@@ -107,7 +107,7 @@ ui <- fluidPage(
       span(class = "chip", icon("graduation-cap"), " Statistika"),
       span(class = "chip", icon("chalkboard-user"), " Inggit Fatika, S.Stat., M.Stat")
   ),
-  
+
   sidebarLayout(
     sidebarPanel(
       width = 3,
@@ -119,211 +119,212 @@ ui <- fluidPage(
       checkboxGroupInput("filter_sert", "Jenis Sertifikat:", choices = NULL),
       actionButton("reset", "Reset Filter", class = "btn-primary btn-block")
     ),
-    
+
     mainPanel(
       width = 9,
       tabsetPanel(
         # Tab 1: dataset
         tabPanel("1. Dataset",
-                 br(),
-                 fluidRow(
-                   column(3, div(class = "stat", div(class = "angka", textOutput("n_obs")), div(class = "label-angka", "Observasi (setelah filter)"))),
-                   column(3, div(class = "stat hijau", div(class = "angka", "5"), div(class = "label-angka", "Variabel dipakai"))),
-                   column(3, div(class = "stat oranye", div(class = "angka", "3"), div(class = "label-angka", "Variabel numerik"))),
-                   column(3, div(class = "stat ungu", div(class = "angka", "2"), div(class = "label-angka", "Variabel kategorik")))
-                 ),
-                 div(class = "kartu",
-                     h4("Latar Belakang, Permasalahan, dan Tujuan"),
-                     p(strong("Latar Belakang & Permasalahan:"), " Pasar properti perumahan di wilayah Jabodetabek menunjukkan disparitas dan ketimpangan harga yang sangat tinggi akibat perbedaan ukuran luas tanah, luas bangunan, wilayah administratif (lokasi), serta status legalitas sertifikat. Ketidakseragaman informasi penawaran di lapangan sering menyulitkan calon pembeli maupun penjual dalam menentukan kewajaran harga pasar secara objektif serta mengukur seberapa besar pengaruh masing-masing karakteristik fisik dan lokasi terhadap nilai properti."),
-                     p(strong("Tujuan Analisis:")),
-                     tags$ol(
-                       tags$li("Mengeksplorasi karakteristik data secara univariat, bivariat, dan multivariat."),
-                       tags$li("Membangun model regresi linear berganda untuk menjelaskan variasi harga rumah."),
-                       tags$li("Menilai kelayakan model melalui serangkaian uji asumsi residual.")
-                     )),
-                 div(class = "kartu",
-                     h4("Sumber Data"),
-                     p("Data iklan rumah dijual di Jabodetabek bersumber dari platform ", strong("Kaggle"), " melalui dataset ", em("Jabodetabek House Price"), ". Harga yang tercatat pada dataset ini merupakan ", strong("harga penawaran"), " iklan properti, bukan harga transaksi akhir."),
-                     uiOutput("teks_sumber")),
-                 div(class = "kartu",
-                     h4("Definisi Variabel"),
-                     DTOutput("tabel_definisi")),
-                 div(class = "kartu",
-                     h4("Alasan Pemilihan Variabel"),
-                     tags$ul(
-                       tags$li(strong("price_in_rp (respons Y):"), " harga adalah hal yang ingin dijelaskan oleh pembeli dan penjual."),
-                       tags$li(strong("land_size_m2 (X1) dan building_size_m2 (X2):"), " ukuran fisik properti, penentu utama nilai rumah."),
-                       tags$li(strong("city (X3):"), " lokasi sangat menentukan harga di wilayah Jabodetabek."),
-                       tags$li(strong("certificate (X4):"), " status hukum kepemilikan memengaruhi keamanan investasi."))),
-                 div(class = "kartu",
-                     h4("Singkatan Sertifikat"),
-                     tags$ul(
-                       tags$li(strong("SHM:"), " Sertifikat Hak Milik, hak terkuat dan penuh."),
-                       tags$li(strong("HGB:"), " Hak Guna Bangunan, berjangka waktu (umumnya 30 tahun)."),
-                       tags$li(strong("Lainnya:"), " Hak Pakai, AJB, girik, dan sejenisnya."),
-                       tags$li(strong("Tidak diketahui:"), " pengiklan mengosongkan data sertifikat."))),
-                 div(class = "kartu",
-                     h4("Cuplikan Data"),
-                     DTOutput("tabel_cuplikan"))
+          br(),
+          fluidRow(
+            column(3, div(class = "stat", div(class = "angka", textOutput("n_obs")), div(class = "label-angka", "Observasi (setelah filter)"))),
+            column(3, div(class = "stat hijau", div(class = "angka", "5"), div(class = "label-angka", "Variabel dipakai"))),
+            column(3, div(class = "stat oranye", div(class = "angka", "3"), div(class = "label-angka", "Variabel numerik"))),
+            column(3, div(class = "stat ungu", div(class = "angka", "2"), div(class = "label-angka", "Variabel kategorik")))
+          ),
+          div(class = "kartu",
+              h4("Latar Belakang, Permasalahan, dan Tujuan"),
+              p(strong("Latar Belakang & Permasalahan:"), " Pasar properti perumahan di wilayah Jabodetabek menunjukkan disparitas (ketimpangan) harga yang sangat tinggi akibat perbedaan ukuran luas tanah, luas bangunan, wilayah administratif (lokasi), serta status legalitas sertifikat. Ketidakseragaman informasi penawaran di lapangan sering menyulitkan calon pembeli maupun penjual dalam menentukan kewajaran harga pasar secara objektif serta mengukur seberapa besar pengaruh masing-masing karakteristik fisik dan lokasi terhadap nilai properti."),
+              p(strong("Tujuan Analisis:")),
+              tags$ol(
+                tags$li("Mengeksplorasi karakteristik data secara univariat, bivariat, dan multivariat."),
+                tags$li("Membangun model regresi linear berganda untuk menjelaskan variasi harga rumah."),
+                tags$li("Menilai kelayakan model melalui serangkaian uji asumsi residual.")
+              )),
+          div(class = "kartu",
+              h4("Sumber Data"),
+              p("Data iklan rumah dijual di Jabodetabek bersumber dari platform ", strong("Kaggle"), " melalui dataset ", em("Jabodetabek House Price"), ". Harga yang tercatat pada dataset ini merupakan ", strong("harga penawaran"), " iklan properti, bukan harga transaksi akhir."),
+              uiOutput("teks_sumber")),
+          div(class = "kartu",
+              h4("Definisi Variabel"),
+              DTOutput("tabel_definisi")),
+          div(class = "kartu",
+              h4("Alasan Pemilihan Variabel"),
+              tags$ul(
+                tags$li(strong("price_in_rp (respons Y):"), " harga adalah hal yang ingin dijelaskan oleh pembeli dan penjual."),
+                tags$li(strong("land_size_m2 (X1) dan building_size_m2 (X2):"), " ukuran fisik properti, penentu utama nilai rumah."),
+                tags$li(strong("city (X3):"), " lokasi sangat menentukan harga di wilayah Jabodetabek."),
+                tags$li(strong("certificate (X4):"), " status hukum kepemilikan memengaruhi keamanan investasi."))),
+          div(class = "kartu",
+              h4("Singkatan Sertifikat"),
+              tags$ul(
+                tags$li(strong("SHM:"), " Sertifikat Hak Milik, hak terkuat dan penuh."),
+                tags$li(strong("HGB:"), " Hak Guna Bangunan, berjangka waktu (umumnya 30 tahun)."),
+                tags$li(strong("Lainnya:"), " Hak Pakai, AJB, girik, dan sejenisnya."),
+                tags$li(strong("Tidak diketahui:"), " pengiklan mengosongkan data sertifikat."))),
+          div(class = "kartu",
+              h4("Cuplikan Data"),
+              DTOutput("tabel_cuplikan"))
         ),
-        
+
         # Tab 2: pengolahan data
         tabPanel("2. Pengolahan Data",
-                 br(),
-                 div(class = "kartu",
-                     h4("Tahapan Pembersihan Data"),
-                     DTOutput("tabel_log"),
-                     tags$ol(
-                       tags$li(strong("Baris kosong:"), " baris dengan harga atau luas kosong dibuang karena tidak bisa dianalisis."),
-                       tags$li(strong("Luas tidak wajar:"), " luas tanah dan bangunan dibatasi 10 sampai 2.000 m² untuk membuang salah input."),
-                       tags$li(strong("Pencilan harga:"), " metode IQR (Q1 - 1,5 IQR, Q3 + 1,5 IQR) pada log10 harga. Skala log dipakai karena harga miring ke kanan; tanpa log, hampir semua rumah mahal akan terbuang."))),
-                 div(class = "kartu",
-                     h4("Data Hilang (Missing Value) dan Duplikat"),
-                     p("Tabel berikut menyajikan informasi mengenai jumlah nilai kosong (*missing value*) pada setiap variabel utama yang digunakan dalam analisis:"),
-                     DTOutput("tabel_hilang"),
-                     br(),
-                     uiOutput("teks_hilang"),
-                     br(),
-                     uiOutput("teks_duplikat")),
-                 div(class = "kartu",
-                     h4("Transformasi Data"),
-                     tags$ul(
-                       tags$li("Harga dinyatakan dalam Rp miliar (price_miliar) agar mudah dibaca."),
-                       tags$li("Regresi memakai ln(harga), ln(luas tanah), dan ln(luas bangunan): distribusinya miring ke kanan, log menstabilkan ragam, dan koefisien dibaca sebagai elastisitas (persen)."),
-                       tags$li("Sertifikat disederhanakan menjadi 4 kategori; nama kota dirapikan (spasi dihapus).")))
+          br(),
+          div(class = "kartu",
+              h4("Tahapan Pembersihan Data"),
+              DTOutput("tabel_log"),
+              tags$ol(
+                tags$li(strong("Baris kosong:"), " baris dengan harga atau luas kosong dibuang karena tidak bisa dianalisis."),
+                tags$li(strong("Luas tidak wajar:"), " luas tanah dan bangunan dibatasi 10 sampai 2.000 m² untuk membuang salah input."),
+                tags$li(strong("Pencilan harga:"), " metode IQR (Q1 - 1,5 IQR, Q3 + 1,5 IQR) pada log10 harga. Skala log dipakai karena harga miring ke kanan; tanpa log, hampir semua rumah mahal akan terbuang."))),
+          div(class = "kartu",
+              h4("Data Hilang (Missing Value) dan Duplikat"),
+              p("Tabel berikut menyajikan informasi mengenai jumlah nilai kosong (*missing value*) pada setiap variabel utama yang digunakan dalam analisis:"),
+              DTOutput("tabel_hilang"),
+              br(),
+              uiOutput("teks_hilang"),
+              br(),
+              uiOutput("teks_duplikat")),
+          div(class = "kartu",
+              h4("Transformasi Data"),
+              tags$ul(
+                tags$li("Harga dinyatakan dalam Rp miliar (price_miliar) agar mudah dibaca."),
+                tags$li("Regresi memakai ln(harga), ln(luas tanah), dan ln(luas bangunan): distribusinya miring ke kanan, log menstabilkan ragam, dan koefisien dibaca sebagai elastisitas (persen)."),
+                tags$li("Sertifikat disederhanakan menjadi 4 kategori; nama kota dirapikan (spasi dihapus).")))
         ),
-        
-        # Tab 3: univariat dengan pilihan tab jenis variabel
+
+        # Tab 3: univariat
         tabPanel("3. Univariat",
-                 br(),
-                 div(class = "kartu",
-                     h4("A. Statistik Deskriptif Variabel Numerik"),
-                     DTOutput("tabel_desk"),
-                     uiOutput("tafsir_desk")),
-                 div(class = "kartu",
-                     h4("B. Distribusi Frekuensi Variabel Kategorik"),
-                     fluidRow(
-                       column(6, DTOutput("tabel_frek_kota"), uiOutput("tafsir_frek_kota")),
-                       column(6, DTOutput("tabel_frek_sert"), uiOutput("tafsir_frek_sert")))),
-                 div(class = "kartu",
-                     h4("C. Visualisasi Univariat (Pilih Berdasarkan Jenis Variabel)"),
-                     p("Silakan pilih tab di bawah ini untuk melihat grafik berdasarkan jenis variabel yang ingin dianalisis secara spesifik:", style = "color:#52796f; font-size:13px; margin-bottom:15px;"),
-                     tabsetPanel(
-                       tabPanel("📊 Variabel Numerik",
-                                br(),
-                                p("Grafik univariat untuk variabel berjenis numerik (Harga, Luas Bangunan, dan Luas Tanah):", style = "font-weight:600; color:#2c3e35;"),
-                                plotlyOutput("u1"), uiOutput("tu1"),
-                                plotlyOutput("u2"), uiOutput("tu2"),
-                                plotlyOutput("u3"), uiOutput("tu3"),
-                                plotlyOutput("u4"), uiOutput("tu4")
-                       ),
-                       tabPanel("📋 Variabel Kategorik",
-                                br(),
-                                p("Grafik univariat untuk variabel berjenis kategorik (Kota dan Jenis Sertifikat):", style = "font-weight:600; color:#2c3e35;"),
-                                plotlyOutput("u5"), uiOutput("tu5"),
-                                plotlyOutput("u6"), uiOutput("tu6")
-                       )
-                     )
-                 )
+          br(),
+          div(class = "kartu",
+              h4("A. Statistik Deskriptif Variabel Numerik"),
+              DTOutput("tabel_desk"),
+              uiOutput("tafsir_desk")),
+          div(class = "kartu",
+              h4("B. Distribusi Frekuensi Variabel Kategorik"),
+              fluidRow(
+                column(6, DTOutput("tabel_frek_kota"), uiOutput("tafsir_frek_kota")),
+                column(6, DTOutput("tabel_frek_sert"), uiOutput("tafsir_frek_sert")))),
+          div(class = "kartu",
+              h4("C. Visualisasi Univariat (Pilih Berdasarkan Jenis Variabel)"),
+              p("Silakan pilih tab di bawah ini untuk melihat grafik berdasarkan jenis variabel yang ingin dianalisis secara spesifik:", style = "color:#52796f; font-size:13px; margin-bottom:15px;"),
+              tabsetPanel(
+                tabPanel("📊 Variabel Numerik",
+                  br(),
+                  p("Grafik univariat untuk variabel berjenis numerik (Harga, Luas Bangunan, dan Luas Tanah):", style = "font-weight:600; color:#2c3e35;"),
+                  plotlyOutput("u1"), uiOutput("tu1"),
+                  plotlyOutput("u2"), uiOutput("tu2"),
+                  plotlyOutput("u3"), uiOutput("tu3"),
+                  plotlyOutput("u4"), uiOutput("tu4")
+                ),
+                tabPanel("📋 Variabel Kategorik",
+                  br(),
+                  p("Grafik univariat untuk variabel berjenis kategorik (Kota dan Jenis Sertifikat):", style = "font-weight:600; color:#2c3e35;"),
+                  plotlyOutput("u5"), uiOutput("tu5"),
+                  plotlyOutput("u6"), uiOutput("tu6")
+                )
+              )
+          )
         ),
-        
-        # Tab 4: bivariat dengan pilihan jenis interaksi variabel
+
+        # Tab 4: bivariat
         tabPanel("4. Bivariat",
-                 br(),
-                 div(class = "kartu",
-                     h4("A. Korelasi Antarvariabel Numerik"),
-                     DTOutput("tabel_korelasi"),
-                     uiOutput("tafsir_korelasi")),
-                 div(class = "kartu",
-                     h4("B. Visualisasi Bivariat (Pilih Berdasarkan Kombinasi Variabel)"),
-                     p("Silakan pilih tab di bawah ini untuk melihat jenis hubungan antarvariabel secara spesifik:", style = "color:#52796f; font-size:13px; margin-bottom:15px;"),
-                     tabsetPanel(
-                       tabPanel("📈 Numerik vs Numerik",
-                                br(),
-                                plotlyOutput("b1"), uiOutput("tb1"),
-                                plotlyOutput("b2"), uiOutput("tb2"),
-                                plotlyOutput("b3"), uiOutput("tb3")
-                       ),
-                       tabPanel("📊 Numerik vs Kategorik",
-                                br(),
-                                plotlyOutput("b4"), uiOutput("tb4"),
-                                plotlyOutput("b5"), uiOutput("tb5")
-                       ),
-                       tabPanel("📋 Kategorik vs Kategorik",
-                                br(),
-                                plotlyOutput("b6"), uiOutput("tb6")
-                       )
-                     )
-                 )
+          br(),
+          div(class = "kartu",
+              h4("A. Korelasi Antarvariabel Numerik"),
+              DTOutput("tabel_korelasi"),
+              uiOutput("tafsir_korelasi")),
+          div(class = "kartu",
+              h4("B. Visualisasi Bivariat (Pilih Berdasarkan Kombinasi Variabel)"),
+              p("Silakan pilih tab di bawah ini untuk melihat jenis hubungan antarvariabel secara spesifik:", style = "color:#52796f; font-size:13px; margin-bottom:15px;"),
+              tabsetPanel(
+                tabPanel("📈 Numerik vs Numerik",
+                  br(),
+                  plotlyOutput("b1"), uiOutput("tb1"),
+                  plotlyOutput("b2"), uiOutput("tb2"),
+                  plotlyOutput("b3"), uiOutput("tb3")
+                ),
+                tabPanel("📊 Numerik vs Kategorik",
+                  br(),
+                  plotlyOutput("b4"), uiOutput("tb4"),
+                  plotlyOutput("b5"), uiOutput("tb5")
+                ),
+                tabPanel("📋 Kategorik vs Kategorik",
+                  br(),
+                  plotlyOutput("b6"), uiOutput("tb6")
+                )
+              )
+          )
         ),
-        
+
         # Tab 5: multivariat
         tabPanel("5. Multivariat",
-                 br(),
-                 div(class = "kartu",
-                     h4("A. Vektor Rata-rata dan Matriks Korelasi"),
-                     DTOutput("tabel_multi"),
-                     uiOutput("tafsir_multi")),
-                 div(class = "kartu",
-                     h4("B. Pencilan dan Normalitas Multivariat (Jarak Mahalanobis)"),
-                     uiOutput("teks_mahal")),
-                 div(class = "kartu",
-                     h4("C. Visualisasi Multivariat"),
-                     plotlyOutput("m1", height = "500px"), uiOutput("tm1"),
-                     plotlyOutput("m2", height = "800px"), uiOutput("tm2"),
-                     plotlyOutput("m3"), uiOutput("tm3"),
-                     plotlyOutput("m4"), uiOutput("tm4"))
+          br(),
+          div(class = "kartu",
+              h4("A. Vektor Rata-rata dan Matriks Korelasi"),
+              DTOutput("tabel_multi"),
+              uiOutput("tafsir_multi")),
+          div(class = "kartu",
+              h4("B. Pencilan dan Normalitas Multivariat (Jarak Mahalanobis)"),
+              uiOutput("teks_mahal")),
+          div(class = "kartu",
+              h4("C. Visualisasi Multivariat"),
+              plotlyOutput("m1", height = "500px"), uiOutput("tm1"),
+              plotlyOutput("m2", height = "800px"), uiOutput("tm2"),
+              plotlyOutput("m3"), uiOutput("tm3"),
+              plotlyOutput("m4"), uiOutput("tm4"))
         ),
-        
+
         # Tab 6: regresi
         tabPanel("6. Regresi Linear Berganda",
-                 br(),
-                 div(class = "kartu",
-                     h4("A. Variabel dan Persamaan Model"),
-                     uiOutput("teks_variabel"),
-                     verbatimTextOutput("persamaan")),
-                 div(class = "kartu",
-                     h4("B. Hasil Estimasi OLS"),
-                     verbatimTextOutput("ringkasan_model"),
-                     DTOutput("tabel_koef"),
-                     verbatimTextOutput("evaluasi_model"),
-                     uiOutput("tafsir_koef")),
-                 div(class = "kartu",
-                     h4("C. Uji Asumsi Residual"),
-                     verbatimTextOutput("vif_out"),
-                     DTOutput("tabel_asumsi"),
-                     uiOutput("tafsir_asumsi"),
-                     h5("Penyebab Asumsi Tidak Terpenuhi"),
-                     uiOutput("sebab_asumsi"),
-                     h5("Upaya Mengatasi dan Hasilnya"),
-                     DTOutput("tabel_upaya"),
-                     uiOutput("tafsir_upaya")),
-                 div(class = "kartu",
-                     h4("D. Visualisasi Hasil Pemodelan dan Diagnostik"),
-                     plotlyOutput("r1"), uiOutput("tr1"),
-                     plotlyOutput("r2"), uiOutput("tr2"),
-                     plotlyOutput("r3"), uiOutput("tr3"),
-                     plotlyOutput("r4"), uiOutput("tr4"),
-                     plotlyOutput("r5"), uiOutput("tr5")),
-                 div(class = "kartu",
-                     h4("E. Keterbatasan Model"),
-                     uiOutput("teks_batas"))
+          br(),
+          div(class = "kartu",
+              h4("A. Variabel dan Persamaan Model"),
+              uiOutput("teks_variabel"),
+              verbatimTextOutput("persamaan"),
+              uiOutput("tafsir_persamaan")),
+          div(class = "kartu",
+              h4("B. Hasil Estimasi OLS"),
+              verbatimTextOutput("ringkasan_model"),
+              DTOutput("tabel_koef"),
+              verbatimTextOutput("evaluasi_model"),
+              uiOutput("tafsir_koef")),
+          div(class = "kartu",
+              h4("C. Uji Asumsi Klasik (Residual) & Interpretasi Variabel"),
+              h5("1. Normalitas Residual"), verbatimTextOutput("out_norm"), uiOutput("tafsir_norm"),
+              h5("2. Multikolinearitas (VIF)"), verbatimTextOutput("vif_out"), uiOutput("tafsir_vif"),
+              h5("3. Heteroskedastisitas"), verbatimTextOutput("out_hetero"), uiOutput("tafsir_hetero"),
+              h5("4. Autokorelasi"), verbatimTextOutput("out_auto"), uiOutput("tafsir_auto"),
+              h5("Ringkasan Empat Uji Asumsi Klasik"), DTOutput("tabel_asumsi"), uiOutput("tafsir_asumsi"),
+              h5("Variabel yang Berpengaruh terhadap Harga"), DTOutput("tabel_pengaruh"), uiOutput("tafsir_pengaruh"),
+              h5("Penyebab Asumsi Tidak Terpenuhi"), uiOutput("sebab_asumsi"),
+              h5("Upaya Mengatasi dan Hasilnya"), DTOutput("tabel_upaya"), uiOutput("tafsir_upaya")),
+          div(class = "kartu",
+              h4("D. Visualisasi Hasil Pemodelan dan Diagnostik"),
+              plotlyOutput("r1"), uiOutput("tr1"),
+              plotlyOutput("r2"), uiOutput("tr2"),
+              plotlyOutput("r3"), uiOutput("tr3"),
+              plotlyOutput("r4"), uiOutput("tr4"),
+              plotlyOutput("r5"), uiOutput("tr5")),
+          div(class = "kartu",
+              h4("E. Keterbatasan Model"),
+              uiOutput("teks_batas"))
         ),
-        
+
         # Tab 7: kesimpulan
         tabPanel("7. Kesimpulan",
-                 br(),
-                 div(class = "kartu", h4("Kesimpulan dan Rekomendasi"), htmlOutput("teks_kesimpulan"))
+          br(),
+          div(class = "kartu", h4("Kesimpulan dan Rekomendasi"), htmlOutput("teks_kesimpulan"))
         ),
-        
+
         # Tab 8: unduh
         tabPanel("8. Unduh",
-                 br(),
-                 div(class = "kartu",
-                     h4("Unduh Hasil Analisis"),
-                     downloadButton("unduh_data", "Data Bersih (CSV)"),
-                     downloadButton("unduh_desk", "Statistik Deskriptif (CSV)"),
-                     downloadButton("unduh_reg", "Koefisien Regresi (CSV)"))
+          br(),
+          div(class = "kartu",
+              h4("Unduh Hasil Analisis"),
+              downloadButton("unduh_data", "Data Bersih (CSV)"),
+              downloadButton("unduh_desk", "Statistik Deskriptif (CSV)"),
+              downloadButton("unduh_reg", "Koefisien Regresi (CSV)"))
         )
       )
     )
@@ -332,7 +333,7 @@ ui <- fluidPage(
 
 # Server
 server <- function(input, output, session) {
-  
+
   data_mentah <- reactive({
     if (file.exists(file_path)) {
       readr::read_csv(file_path, show_col_types = FALSE)
@@ -343,13 +344,13 @@ server <- function(input, output, session) {
       validate(need(FALSE, "File jabodetabek_house_price.csv tidak ditemukan. Letakkan satu folder dengan app.R."))
     }
   })
-  
+
   var5 <- c("price_in_rp", "land_size_m2", "building_size_m2", "city", "certificate")
-  
+
   data_bersih <- reactive({
     d <- data_mentah()
     n0 <- nrow(d)
-    
+
     d$city <- str_trim(d$city)
     sert <- str_to_lower(replace_na(d$certificate, ""))
     d$certificate <- case_when(
@@ -358,24 +359,24 @@ server <- function(input, output, session) {
       sert == ""              ~ "Tidak diketahui",
       TRUE                    ~ "Lainnya"
     )
-    
+
     d <- d %>% filter(!is.na(land_size_m2), !is.na(building_size_m2), !is.na(price_in_rp), price_in_rp > 0)
     n1 <- nrow(d)
-    
+
     d <- d %>% filter(land_size_m2 >= 10, land_size_m2 <= 2000, building_size_m2 >= 10, building_size_m2 <= 2000)
     n2 <- nrow(d)
-    
+
     lp  <- log10(d$price_in_rp)
     q   <- quantile(lp, c(0.25, 0.75))
     iqr <- q[2] - q[1]
     d <- d %>% filter(lp >= q[1] - 1.5 * iqr, lp <= q[2] + 1.5 * iqr)
     n3 <- nrow(d)
-    
+
     d$price_miliar <- d$price_in_rp / 1e9
     d$ln_price <- log(d$price_in_rp)
     d$ln_land  <- log(d$land_size_m2)
     d$ln_bld   <- log(d$building_size_m2)
-    
+
     attr(d, "log") <- data.frame(
       Langkah       = c("Data awal", "Buang baris kosong", "Buang luas tidak wajar", "Buang pencilan harga (IQR log10)"),
       Baris_Tersisa = c(n0, n1, n2, n3),
@@ -384,7 +385,7 @@ server <- function(input, output, session) {
     d
   })
   log_bersih <- reactive({ attr(data_bersih(), "log") })
-  
+
   observe({
     d <- data_bersih()
     kota <- sort(unique(d$city)); sert <- sort(unique(d$certificate))
@@ -394,14 +395,14 @@ server <- function(input, output, session) {
     updateCheckboxGroupInput(session, "filter_sert", choices = sert, selected = sert)
     updateSliderInput(session, "filter_harga", min = pmin, max = pmax, value = c(pmin, pmax))
   })
-  
+
   observeEvent(input$reset, {
     d <- data_bersih()
     updateCheckboxGroupInput(session, "filter_kota", selected = sort(unique(d$city)))
     updateCheckboxGroupInput(session, "filter_sert", selected = sort(unique(d$certificate)))
     updateSliderInput(session, "filter_harga", value = c(floor(min(d$price_miliar) * 10) / 10, ceiling(max(d$price_miliar))))
   })
-  
+
   data_f <- reactive({
     data_bersih()
     validate(need(length(input$filter_kota) > 0, "Pilih minimal satu kota."),
@@ -414,9 +415,9 @@ server <- function(input, output, session) {
     validate(need(nrow(d) > 30, "Data terlalu sedikit. Longgarkan filter."))
     d
   })
-  
+
   output$n_obs <- renderText({ comma(nrow(data_f())) })
-  
+
   # Tab 1
   output$teks_sumber <- renderUI({
     lg <- log_bersih()
@@ -424,7 +425,7 @@ server <- function(input, output, session) {
       tags$li(paste0("Observasi awal: ", comma(lg$Baris_Tersisa[1]), " baris; setelah dibersihkan: ", comma(lg$Baris_Tersisa[4]), " baris.")),
       tags$li(paste0("Variabel pada file data: ", ncol(data_mentah()), "; dipakai: 5 (3 numerik, 2 kategorik).")))
   })
-  
+
   output$tabel_definisi <- renderDT({
     datatable(data.frame(
       Variabel = var5,
@@ -433,17 +434,17 @@ server <- function(input, output, session) {
       Definisi = c("Harga penawaran rumah", "Luas tanah", "Luas bangunan", "Kota/kabupaten lokasi rumah", "Jenis sertifikat (SHM, HGB, Lainnya, Tidak diketahui)")
     ), options = list(dom = "t"), rownames = FALSE)
   })
-  
+
   output$tabel_cuplikan <- renderDT({
     d <- data_f() %>% select(price_miliar, land_size_m2, building_size_m2, city, certificate)
     datatable(head(d, 50), options = list(pageLength = 5, scrollX = TRUE), rownames = FALSE)
   })
-  
+
   # Tab 2: Pengolahan Data (Missing Value & Duplikat)
   output$tabel_log <- renderDT({
     datatable(log_bersih(), options = list(dom = "t"), rownames = FALSE)
   })
-  
+
   output$tabel_hilang <- renderDT({
     mentah <- data_mentah()
     hilang <- sapply(mentah[var5], function(x) sum(is.na(x) | (is.character(x) & trimws(x) == "")))
@@ -456,7 +457,7 @@ server <- function(input, output, session) {
     tb$Status <- ifelse(tb$Jumlah_Missing_Value > 0, "Terdapat Missing Value", "Bersih (Tidak Ada)")
     datatable(tb, options = list(dom = "t"), rownames = FALSE)
   })
-  
+
   output$teks_hilang <- renderUI({
     mentah <- data_mentah()
     hilang <- sapply(mentah[var5], function(x) sum(is.na(x) | (is.character(x) & trimws(x) == "")))
@@ -465,14 +466,14 @@ server <- function(input, output, session) {
              " baris), terdapat total ", comma(total_m), " nilai kosong (missing value) secara keseluruhan di antara kelima variabel yang dianalisis. ",
              "Variabel seperti harga, luas tanah, dan luas bangunan umumnya bersih, sedangkan kolom keterangan sertifikat atau wilayah tertentu memiliki sel kosong yang langsung ditangani pada tahapan pembersihan data dengan mengisinya atau memfilternya agar tidak mengganggu proses pemodelan."))
   })
-  
+
   output$teks_duplikat <- renderUI({
     mentah <- data_mentah()
     dup <- sum(duplicated(mentah[var5]))
     p(paste0("Catatan Duplikat: Ada ", comma(dup), " baris (", round(dup / nrow(mentah) * 100, 1),
              "%) dengan kelima variabel yang persis sama. Baris ini tidak dihapus karena data tidak punya kolom pembeda (misalnya ID iklan) untuk memastikan apakah itu iklan ganda atau unit berbeda dengan spesifikasi sama (misalnya rumah kembar di satu perumahan). Hal ini dicatat sebagai keterbatasan."))
   })
-  
+
   # Tab 3: Univariat
   output$tabel_desk <- renderDT({
     d <- data_f()
@@ -497,7 +498,7 @@ server <- function(input, output, session) {
     tb[, -1] <- round(tb[, -1], 2)
     datatable(tb, options = list(dom = "t", scrollX = TRUE), rownames = FALSE)
   })
-  
+
   output$tafsir_desk <- renderUI({
     d <- data_f()
     s <- skew(d$price_miliar)
@@ -507,7 +508,7 @@ server <- function(input, output, session) {
                  ". Hal yang sama berlaku untuk luas tanah (skewness ", round(skew(d$land_size_m2), 2), ") dan luas bangunan (skewness ",
                  round(skew(d$building_size_m2), 2), "): sebagian kecil rumah berukuran dan berharga sangat besar menarik rata-rata ke atas."))
   })
-  
+
   output$tabel_frek_kota <- renderDT({
     tb <- data_f() %>% count(city, name = "Frekuensi") %>%
       mutate(Persentase = round(Frekuensi / sum(Frekuensi) * 100, 2)) %>% arrange(desc(Frekuensi))
@@ -519,7 +520,7 @@ server <- function(input, output, session) {
           paste0(tb$city[1], " memiliki iklan terbanyak (", comma(tb$n[1]), " rumah, ", round(tb$n[1] / sum(tb$n) * 100, 1),
                  "%), sedangkan ", tb$city[nrow(tb)], " paling sedikit (", comma(tb$n[nrow(tb)]), " rumah)."))
   })
-  
+
   output$tabel_frek_sert <- renderDT({
     tb <- data_f() %>% count(certificate, name = "Frekuensi") %>%
       mutate(Persentase = round(Frekuensi / sum(Frekuensi) * 100, 2)) %>% arrange(desc(Frekuensi))
@@ -530,8 +531,8 @@ server <- function(input, output, session) {
     kotak("Frekuensi Sertifikat",
           paste0("Sertifikat ", tb$certificate[1], " mendominasi (", round(tb$n[1] / sum(tb$n) * 100, 1), "% data)."))
   })
-  
-  # U1 (Original Color)
+
+  # U1
   output$u1 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = price_miliar)) +
       geom_histogram(bins = 40, fill = "#2563eb", color = "white") +
@@ -544,8 +545,8 @@ server <- function(input, output, session) {
     kotak("Histogram Harga",
           paste0("Berdasarkan grafik di atas, histogram ini digunakan untuk melihat bentuk sebaran data harga rumah. Visualisasi ini menunjukkan bahwa distribusi harga miring ke kanan (skewness = ", sk, "), di mana sebagian besar rumah berharga rendah hingga menengah dengan ekor panjang ke harga tinggi, yang artinya variasi harga didominasi oleh properti terjangkau sementara rumah mewah jumlahnya relatif sedikit."))
   })
-  
-  # U2 (Original Color)
+
+  # U2
   output$u2 <- renderPlotly({
     plot_ly(data_f(), x = ~price_miliar, type = "box", name = "Harga",
             fillcolor = "#f59e0b", line = list(color = "#b45309"),
@@ -565,8 +566,8 @@ server <- function(input, output, session) {
     kotak("Boxplot Harga",
           paste0("Berdasarkan grafik di atas, boxplot ini digunakan untuk meringkas nilai median dan kuartil sekaligus mengidentifikasi adanya pencilan. Visualisasi ini menunjukkan median harga sebesar Rp", med, " miliar dengan batas atas pencilan Rp", batas, " miliar dan terdapat ", n_out, " rumah (", p_out, "%) di atas batas tersebut, yang artinya sebagian besar data terpusat di bawah namun terdapat sejumlah harga tinggi yang masih wajar."))
   })
-  
-  # U3 (Original Color)
+
+  # U3
   output$u3 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = building_size_m2)) +
       geom_histogram(aes(y = after_stat(density)), bins = 40, fill = "#059669", color = "white") +
@@ -579,8 +580,8 @@ server <- function(input, output, session) {
     kotak("Luas Bangunan",
           paste0("Berdasarkan grafik di atas, histogram dan density plot ini digunakan untuk melihat sebaran ukuran fisik bangunan rumah. Visualisasi ini menunjukkan median luas bangunan sebesar ", round(median(s)), " m² dengan bentuk distribusi miring ke kanan, yang artinya sebagian besar rumah di Jabodetabek memiliki ukuran bangunan yang tidak terlalu besar."))
   })
-  
-  # U4 (Original Color)
+
+  # U4
   output$u4 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = land_size_m2)) +
       geom_histogram(aes(y = after_stat(density)), bins = 40, fill = "#0284c7", color = "white") +
@@ -593,8 +594,8 @@ server <- function(input, output, session) {
     kotak("Luas Tanah",
           paste0("Berdasarkan grafik di atas, plot ini digunakan untuk melihat karakteristik distribusi luas tanah secara univariat. Visualisasi ini menunjukkan median luas tanah sebesar ", round(median(s)), " m² dengan pola miring ke kanan, yang artinya luas tanah sebagian besar properti berukuran kompak dan mendasari penggunaan transformasi ln pada analisis regresi."))
   })
-  
-  # U5 (Original Color)
+
+  # U5
   output$u5 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = fct_infreq(city))) +
       geom_bar(fill = "#dc2626") +
@@ -607,7 +608,7 @@ server <- function(input, output, session) {
     kotak("Diagram Batang Kota",
           paste0("Berdasarkan grafik di atas, diagram batang ini digunakan untuk membandingkan jumlah frekuensi iklan rumah di setiap wilayah. Visualisasi ini menunjukkan bahwa ", tb$city[1], " memiliki jumlah iklan terbanyak (", comma(tb$n[1]), " rumah) dan ", tb$city[nrow(tb)], " paling sedikit (", comma(tb$n[nrow(tb)]), " rumah), yang artinya konsentrasi penawaran rumah sangat bervariasi antar wilayah."))
   })
-  
+
   # U6
   output$u6 <- renderPlotly({
     tb <- data_f() %>% count(certificate)
@@ -620,7 +621,7 @@ server <- function(input, output, session) {
     kotak("Pie Chart Sertifikat",
           paste0("Berdasarkan grafik di atas, pie chart ini digunakan untuk menampilkan proporsi status hukum kepemilikan properti. Visualisasi ini menunjukkan bahwa sertifikat ", tb$certificate[1], " mendominasi pasar sebesar ", pct, "%, yang artinya mayoritas rumah di Jabodetabek menggunakan jenis kepemilikan tersebut."))
   })
-  
+
   # Tab 4: Bivariat
   output$tabel_korelasi <- renderDT({
     d <- data_f()
@@ -645,8 +646,8 @@ server <- function(input, output, session) {
                  ifelse(cor(d$ln_price, d$ln_bld) > cor(d$price_miliar, d$building_size_m2), "lebih tinggi", "tidak lebih tinggi"),
                  " daripada skala asli (", round(cor(d$price_miliar, d$building_size_m2), 2), "); jika lebih tinggi, hubungan lebih linear setelah log sehingga log dipakai di grafik dan model."))
   })
-  
-  # B1 (Original Color)
+
+  # B1
   output$b1 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = building_size_m2, y = price_miliar)) +
       geom_point(alpha = 0.4, color = "#2563eb") +
@@ -661,8 +662,8 @@ server <- function(input, output, session) {
     kotak("Harga vs Luas Bangunan",
           paste0("Berdasarkan grafik di atas, scatterplot ini digunakan untuk melihat hubungan antara harga dan luas bangunan dalam skala logaritma. Visualisasi ini menunjukkan pola titik yang menaik ke kanan atas dengan korelasi ", kekuatan(r), " (r = ", round(r, 2), "), yang artinya semakin luas bangunan suatu rumah, maka harga penawarannya cenderung semakin tinggi."))
   })
-  
-  # B2 (Original Color)
+
+  # B2
   output$b2 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = land_size_m2, y = price_miliar)) +
       geom_point(alpha = 0.4, color = "#0f172a") +
@@ -677,8 +678,8 @@ server <- function(input, output, session) {
     kotak("Harga vs Luas Tanah",
           paste0("Berdasarkan grafik di atas, scatterplot ini digunakan untuk melihat keterkaitan antara harga dan luas tanah properti. Visualisasi ini menunjukkan hubungan yang ", kekuatan(r), " (r = ", round(r, 2), ") dengan sebaran titik yang cukup melebar, yang artinya luas tanah saja belum sepenuhnya menentukan harga karena faktor lokasi turut memegang peranan penting."))
   })
-  
-  # B3 (Original Color)
+
+  # B3
   output$b3 <- renderPlotly({
     cm <- cor(data_f()[, c("ln_price", "ln_land", "ln_bld")])
     nama <- c("ln(Harga)", "ln(Luas Tanah)", "ln(Luas Bangunan)")
@@ -697,8 +698,8 @@ server <- function(input, output, session) {
     kotak("Plot Korelasi",
           paste0("Berdasarkan grafik di atas, heatmap korelasi ini digunakan untuk merangkum keeratan hubungan antar seluruh variabel numerik. Visualisasi ini menunjukkan korelasi antara luas tanah dan luas bangunan sebesar r = ", r_lb, ", yang artinya kedua variabel prediktor ini saling berkaitan erat dan perlu diuji multikolinearitasnya dalam model regresi."))
   })
-  
-  # B4 (Original Color)
+
+  # B4
   output$b4 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = reorder(city, price_miliar, FUN = median), y = price_miliar)) +
       geom_violin(fill = "cornflowerblue") +
@@ -711,13 +712,13 @@ server <- function(input, output, session) {
   output$tb4 <- renderUI({
     md <- data_f() %>% group_by(city) %>% summarise(m = median(price_miliar)) %>% arrange(m)
     kotak("Harga per Kota",
-          paste0("Berdasarkan grafik di atas, gabungan violin dan boxplot ini digunakan untuk membandingkan distribusi harga rumah antar wilayah kota/kabupaten. Visualisasi ini menunjukkan median harga tertinggi berada di ", md$city[nrow(md)], " (Rp", round(md$m[nrow(md)], 2), " miliar) dan terendah di ", md$city[1], " (Rp", round(md$m[1], 2), " miliar), yang artinya faktor lokasi kota membedakan tingkat harga secara signifikan."))
+          paste0("Berdasarkan grafik di atas, gabungan violin dan boxplot ini digunakan untuk membandingkan distribusi harga rumah antar wilayah kota/kabupaten. Visualisasi ini menunjukkan median harga tertinggi berada di ", md$city[nrow(md)], " (Rp", round(md$m[nrow(md)], 2), " miliar) dan terendah di ", md$city[1], " (Rp", round(md$m[1], 1), " miliar), yang artinya faktor lokasi kota membedakan tingkat harga secara signifikan."))
   })
-  
-  # B5 (Original Color)
+
+  # B5
   output$b5 <- renderPlotly({
     tb <- data_f() %>% group_by(certificate) %>%
-      summarise(n = n(), rata = mean(price_miliar), se = sd(price_miliar) / sqrt(n()))
+       summarise(n = n(), rata = mean(price_miliar), se = sd(price_miliar) / sqrt(n()))
     p <- ggplot(tb, aes(x = certificate, y = rata)) +
       geom_point(size = 3, color = "#2563eb") +
       geom_errorbar(aes(ymin = rata - se, ymax = rata + se), width = 0.15) +
@@ -730,7 +731,7 @@ server <- function(input, output, session) {
     kotak("Harga per Sertifikat",
           paste0("Berdasarkan grafik di atas, error bar plot ini digunakan untuk membandingkan rata-rata harga rumah berdasarkan jenis sertifikat beserta tingkat ketidakpastiannya. Visualisasi ini menunjukkan rata-rata harga tertinggi pada sertifikat ", tb$certificate[nrow(tb)], " dan terendah pada ", tb$certificate[1], ", yang artinya status legalitas hukum kepemilikan memberikan variasi terhadap nilai rata-rata properti."))
   })
-  
+
   # B6
   output$b6 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = city, fill = certificate)) +
@@ -750,7 +751,7 @@ server <- function(input, output, session) {
     kotak("Kota x Sertifikat",
           paste0("Berdasarkan grafik di atas, segmented bar chart ini digunakan untuk melihat komposisi proporsi jenis sertifikat di setiap wilayah kota. Visualisasi ini menunjukkan hasil uji Chi-Square dengan p-value ", p_txt(uji$p.value), " dan nilai Cramér's V = ", round(v, 2), ", yang artinya terdapat keterkaitan antara wilayah kota dan jenis sertifikat kepemilikan rumah."))
   })
-  
+
   # Tab 5: Multivariat
   output$tabel_multi <- renderDT({
     x <- data_f() %>% select(price_miliar, land_size_m2, building_size_m2)
@@ -769,7 +770,7 @@ server <- function(input, output, session) {
           paste0("Tabel merangkum vektor rata-rata dan matriks korelasi tiga variabel numerik sekaligus. Harga paling kuat berkorelasi dengan luas bangunan (r = ",
                  round(cor(d$price_miliar, d$building_size_m2), 2), "), lalu luas tanah (r = ", round(cor(d$price_miliar, d$land_size_m2), 2), ")."))
   })
-  
+
   mahal <- reactive({
     d <- data_f()
     x <- d[, c("ln_price", "ln_land", "ln_bld")]
@@ -780,7 +781,7 @@ server <- function(input, output, session) {
     list(d2 = d2, cutoff = cutoff, outlier = d2 > cutoff,
          kuantil = kuantil, rq = cor(sort(d2), kuantil))
   })
-  
+
   output$teks_mahal <- renderUI({
     m <- mahal()
     tags$ul(
@@ -791,7 +792,7 @@ server <- function(input, output, session) {
                      ". Makin dekat 1, makin lurus Q-Q plot. Pada n besar, uji formal hampir selalu menolak normalitas, sehingga kesimpulan dilihat bersama grafik Q-Q.")),
       tags$li("Grafik pendukung ada di bagian C di bawah: plot 3 (pencilan multivariat) dan plot 4 (Q-Q plot chi-square)."))
   })
-  
+
   # M1
   output$m1 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = land_size_m2, y = building_size_m2, color = city, size = price_miliar)) +
@@ -808,7 +809,7 @@ server <- function(input, output, session) {
     kotak("Bubble Plot",
           paste0("Berdasarkan grafik di atas, bubble plot ini digunakan untuk menampilkan empat variabel secara simultan (luas tanah, luas bangunan, kota, dan harga). Visualisasi ini menunjukkan bahwa gelembung ukuran besar (harga tinggi) cenderung terkonsentrasi di sisi kanan atas sejalan dengan tingginya korelasi antara luas bangunan dan harga (r = ", r_pb, "), yang artinya properti berukuran besar di kota tertentu memiliki valuasi harga yang jauh lebih tinggi."))
   })
-  
+
   # M2
   output$m2 <- renderPlotly({
     p <- ggplot(data_f(), aes(x = building_size_m2, y = price_miliar, color = certificate)) +
@@ -825,8 +826,8 @@ server <- function(input, output, session) {
     kotak("Facet Plot",
           paste0("Berdasarkan grafik di atas, facet plot ini digunakan untuk memecah pola hubungan harga dan luas bangunan di tiap wilayah kota secara terpisah. Visualisasi ini menunjukkan konsistensi hubungan positif di berbagai kota dengan median harga per meter persegi tertinggi di ", pp$city[nrow(pp)], " (Rp", round(pp$m[nrow(pp)], 1), " juta) dan terendah di ", pp$city[1], " (Rp", round(pp$m[1], 1), " juta), yang artinya karakteristik pertumbuhan harga antar wilayah memiliki standar nilai yang berbeda-beda."))
   })
-  
-  # M3 (Original Color)
+
+  # M3
   output$m3 <- renderPlotly({
     d <- data_f(); m <- mahal()
     d$Status <- ifelse(m$outlier, "Pencilan multivariat", "Normal")
@@ -845,8 +846,8 @@ server <- function(input, output, session) {
     kotak("Pencilan Mahalanobis",
           paste0("Berdasarkan grafik di atas, plot ini digunakan untuk mendeteksi pencilan secara multivariat menggunakan Jarak Mahalanobis. Visualisasi ini menunjukkan adanya ", n_out, " titik merah (", pct_out, "%) yang berada di atas batas kritis chi-square (D² > ", round(m$cutoff, 2), "), yang artinya kombinasi antara harga, luas tanah, dan luas bangunan pada titik-titik tersebut tidak lazim dibandingkan mayoritas data lainnya."))
   })
-  
-  # M4 (Original Color)
+
+  # M4
   output$m4 <- renderPlotly({
     m <- mahal()
     df <- data.frame(kuantil = m$kuantil, d2 = sort(m$d2))
@@ -863,7 +864,7 @@ server <- function(input, output, session) {
     kotak("Q-Q Plot Chi-Square",
           paste0("Berdasarkan grafik di atas, Q-Q plot chi-square ini digunakan untuk menguji asumsi normalitas multivariat data. Visualisasi ini menunjukkan nilai korelasi titik dengan kuantil teoritis sebesar rQ = ", round(m$rq, 4), " di mana titik-titik mulai menjauhi garis referensi pada bagian ekor kanan, yang artinya sebaran data multivariat memiliki ekor yang lebih berat dari distribusi normal baku."))
   })
-  
+
   # Tab 6: Regresi Linear Berganda
   model <- reactive({
     d <- data_f()
@@ -876,7 +877,7 @@ server <- function(input, output, session) {
     d$certificate <- relevel(d$certificate, ref = acuan)
     lm(ln_price ~ ln_land + ln_bld + city + certificate, data = d)
   })
-  
+
   nama_koef <- function(n, m) {
     kota0 <- m$xlevels$city[1]; sert0 <- m$xlevels$certificate[1]
     sapply(n, function(x) {
@@ -887,25 +888,25 @@ server <- function(input, output, session) {
       else paste0("Sertifikat: ", sub("^certificate", "", x), " (vs ", sert0, ")")
     }, USE.NAMES = FALSE)
   }
-  
+
   output$teks_variabel <- renderUI({
     m <- model()
     tags$ul(
       tags$li(strong("Respons (Y):"), " ln(Harga). Harga miring ke kanan; log menstabilkan ragam dan koefisien dibaca sebagai persentase."),
       tags$li(strong("Prediktor:"), " ln(Luas tanah), ln(Luas bangunan), Kota (dummy), Sertifikat (dummy)."),
       tags$li(strong("Kategori acuan:"), paste0(" Kota = ", m$xlevels$city[1], ", Sertifikat = ", m$xlevels$certificate[1],
-                                                ". Koefisien dummy adalah selisih terhadap kategori acuan.")),
+                                              ". Koefisien dummy adalah selisih terhadap kategori acuan.")),
       tags$li(strong("Model:"), " ln(Harga) = β0 + β1 ln(Tanah) + β2 ln(Bangunan) + Σ γ Kota + Σ δ Sertifikat + ε"))
   })
-  
+
   output$persamaan <- renderPrint({
     m <- model(); b <- coef(m); nm <- nama_koef(names(b), m)
     cat(sprintf("ln(Harga) = %.3f\n", b[1]))
     for (i in 2:length(b)) cat(sprintf("   %s %.3f x [%s]\n", ifelse(b[i] >= 0, "+", "-"), abs(b[i]), nm[i]))
   })
-  
+
   output$ringkasan_model <- renderPrint({ summary(model()) })
-  
+
   output$tabel_koef <- renderDT({
     m <- model(); cf <- summary(m)$coefficients
     tb <- data.frame(
@@ -918,7 +919,7 @@ server <- function(input, output, session) {
       row.names = NULL)
     datatable(tb, options = list(dom = "t", pageLength = 20, scrollX = TRUE), rownames = FALSE)
   })
-  
+
   output$evaluasi_model <- renderPrint({
     m <- model(); s <- summary(m)
     rmse <- sqrt(mean(residuals(m)^2))
@@ -927,7 +928,7 @@ server <- function(input, output, session) {
     cat(sprintf("RMSE (skala ln) = %.3f, kira-kira galat prediksi harga %.0f%%\n", rmse, (exp(rmse) - 1) * 100))
     cat(sprintf("Uji simultan F = %.1f (db1 = %d, db2 = %d), %s\n", s$fstatistic[1], s$fstatistic[2], s$fstatistic[3], p_txt(pF)))
   })
-  
+
   output$tafsir_koef <- renderUI({
     m <- model(); s <- summary(m); cf <- s$coefficients
     pF <- pf(s$fstatistic[1], s$fstatistic[2], s$fstatistic[3], lower.tail = FALSE)
@@ -941,7 +942,7 @@ server <- function(input, output, session) {
                  "Koefisien dummy dibaca sebagai selisih harga terhadap kategori acuan (kolom Efek_Harga_Persen). ",
                  "R² = ", round(s$r.squared, 3), " berarti model menjelaskan ", round(s$r.squared * 100, 1), "% variasi ln(harga)."))
   })
-  
+
   asumsi <- reactive({
     m <- model(); d <- data_f()
     res <- residuals(m)
@@ -954,35 +955,40 @@ server <- function(input, output, session) {
     list(sw = sw, ks = ks, bp = bp, gl = gl, dw_stat = unname(dw$statistic), dw_p = dw$p.value,
          normal_ok = min(sw, ks) >= 0.05, homo_ok = min(bp, gl) >= 0.05)
   })
-  
+
   output$vif_out <- renderPrint({
     cat("Multikolinearitas (VIF; untuk variabel kategorik dipakai GVIF):\n")
     print(vif(model()))
   })
-  
-  output$tabel_asumsi <- renderDT({
-    a <- asumsi()
-    ok <- function(p) ifelse(p >= 0.05, "Terpenuhi", "Tidak terpenuhi")
-    tb <- data.frame(
-      Asumsi = c("Normalitas residual", "Normalitas residual", "Homoskedastisitas", "Homoskedastisitas", "Independensi (informatif)"),
-      Uji    = c("Shapiro-Wilk", "Kolmogorov-Smirnov", "Breusch-Pagan", "Glejser", paste0("Durbin-Watson (DW = ", round(a$dw_stat, 2), ")")),
-      p_value = c(a$sw, a$ks, a$bp, a$gl, a$dw_p),
-      Kesimpulan = c(ok(a$sw), ok(a$ks), ok(a$bp), ok(a$gl), "Tidak dijadikan kesimpulan"))
-    tb$p_value <- ifelse(tb$p_value < 0.001, "< 0.001", as.character(round(tb$p_value, 3)))
-    datatable(tb, options = list(dom = "t"), rownames = FALSE)
-  })
-  
-  output$tafsir_asumsi <- renderUI({
-    a <- asumsi(); g <- vif(model())
-    vmax <- if (is.matrix(g)) max(g[, 3]^2) else max(g)
-    kotak("Uji Asumsi",
-          paste0("Multikolinearitas ", ifelse(vmax < 10, "tidak bermasalah", "perlu diperhatikan"), " (VIF terbesar ", round(vmax, 2), ", batas umum 10). ",
-                 "Normalitas residual ", ifelse(a$normal_ok, "terpenuhi", "tidak terpenuhi"), " (Shapiro-Wilk ", p_txt(a$sw), "). ",
-                 "Homoskedastisitas ", ifelse(a$homo_ok, "terpenuhi", "tidak terpenuhi"), " (Breusch-Pagan ", p_txt(a$bp), "; Glejser ", p_txt(a$gl), "). ",
-                 "Autokorelasi: Durbin-Watson ditampilkan hanya sebagai informasi karena data cross-section; urutan baris iklan tidak bermakna waktu, jadi nilainya tidak dijadikan dasar kesimpulan. ",
-                 ifelse(a$normal_ok && a$homo_ok, "", "Karena ada asumsi yang tidak terpenuhi, p-value dan selang kepercayaan dibaca hati-hati; uji formal juga sangat sensitif pada data besar sehingga grafik residual perlu dilihat bersamanya.")))
-  })
-  
+
+  # Interpretasi persamaan model
+  output$tafsir_persamaan <- renderUI({ m <- model(); b <- coef(m); nm <- nama_koef(names(b), m); ik <- which(startsWith(names(b), "city")); contoh <- if (length(ik) > 0) { j <- ik[which.max(b[ik])]; pct <- (exp(b[j]) - 1) * 100; paste0(" Contoh: ", nm[j], " bernilai ", round(b[j], 3), ", yang berarti harga sekitar ", round(abs(pct), 1), "% ", ifelse(pct >= 0, "lebih tinggi", "lebih rendah"), " daripada kota acuan pada luas yang sama.") } else ""; kotak("Persamaan Model", paste0("Berdasarkan persamaan di atas, koefisien ln(luas bangunan) = ", round(b["ln_bld"], 3), " dan ln(luas tanah) = ", round(b["ln_land"], 3), " bertanda ", ifelse(all(b[c("ln_bld", "ln_land")] > 0), "positif", "tidak seluruhnya positif"), ", yang artinya kenaikan luas bangunan 1% diikuti kenaikan harga sekitar ", round(b["ln_bld"], 2), "% dan kenaikan luas tanah 1% sekitar ", round(b["ln_land"], 2), "% (elastisitas), dengan variabel lain tetap. Koefisien kota dan sertifikat adalah selisih ln(harga) terhadap kategori acuan (", m$xlevels$city[1], " dan ", m$xlevels$certificate[1], ").", contoh, " Intersep (", round(b[1], 3), ") hanya titik awal garis dan tidak bermakna praktis karena luas = 0 tidak mungkin.")) })
+
+  # Empat uji asumsi klasik: (1) normalitas, (2) multikolinearitas, (3) heteroskedastisitas, (4) autokorelasi
+  # 1. Normalitas
+  output$out_norm <- renderPrint({ res <- residuals(model()); print(shapiro.test(res)); suppressWarnings(print(ks.test(res, "pnorm", mean(res), sd(res)))) })
+  output$tafsir_norm <- renderUI({ a <- asumsi(); kotak("Normalitas Residual", paste0("Berdasarkan output di atas, uji Shapiro-Wilk ", p_txt(a$sw), " dan Kolmogorov-Smirnov ", p_txt(a$ks), " (H0: residual berdistribusi normal, ditolak jika p < 0,05), yang artinya residual ", ifelse(a$normal_ok, "berdistribusi normal sehingga asumsi normalitas terpenuhi.", "tidak berdistribusi normal sehingga asumsi normalitas tidak terpenuhi."))) })
+
+  # 2. Multikolinearitas (output vif_out ada di atas)
+  output$tafsir_vif <- renderUI({ g <- vif(model()); gv <- if (is.matrix(g)) g[, 1] else g; vmax <- if (is.matrix(g)) max(g[, 3]^2) else max(g); kotak("Multikolinearitas", paste0("Berdasarkan output di atas, VIF ln(luas tanah) = ", round(gv["ln_land"], 2), " dan ln(luas bangunan) = ", round(gv["ln_bld"], 2), " dengan nilai terbesar ", round(vmax, 2), " (H0: tidak ada multikolinearitas, ditolak jika VIF > 10), yang artinya ", ifelse(vmax <= 10, "tidak terjadi multikolinearitas yang serius sehingga asumsi terpenuhi.", "terjadi multikolinearitas sehingga asumsi tidak terpenuhi."))) })
+
+  # 3. Heteroskedastisitas
+  output$out_hetero <- renderPrint({ m <- model(); d <- data_f(); print(bptest(m)); gg <- summary(lm(abs(residuals(m)) ~ ln_land + ln_bld + city + certificate, data = d)); cat(sprintf("\nUji Glejser (|residual| ~ prediktor): F = %.2f (db1 = %d, db2 = %d), %s\n", gg$fstatistic[1], gg$fstatistic[2], gg$fstatistic[3], p_txt(asumsi()$gl))) })
+  output$tafsir_hetero <- renderUI({ a <- asumsi(); kotak("Heteroskedastisitas", paste0("Berdasarkan output di atas, uji Breusch-Pagan ", p_txt(a$bp), " dan Glejser ", p_txt(a$gl), " (H0: ragam residual konstan, ditolak jika p < 0,05), yang artinya ragam residual ", ifelse(a$homo_ok, "konstan sehingga asumsi homoskedastisitas terpenuhi.", "tidak konstan (heteroskedastisitas) sehingga asumsi homoskedastisitas tidak terpenuhi."))) })
+
+  # 4. Autokorelasi
+  output$out_auto <- renderPrint({ print(dwtest(model(), alternative = "two.sided")) })
+  output$tafsir_auto <- renderUI({ a <- asumsi(); res <- residuals(model()); set.seed(123); dw_acak <- sum(diff(sample(res))^2) / sum(res^2); tambahan <- ifelse(abs(dw_acak - 2) < 0.15, paste0(" Jika urutan baris diacak, DW menjadi ", round(dw_acak, 2), " (mendekati 2), sehingga autokorelasi ini berasal dari urutan baris data yang berkelompok (bukan menurut waktu), bukan dari model."), paste0(" Jika urutan baris diacak, DW menjadi ", round(dw_acak, 2), ".")); kotak("Autokorelasi", paste0("Berdasarkan output di atas, statistik Durbin-Watson = ", round(a$dw_stat, 2), " (", p_txt(a$dw_p), "; H0: tidak ada autokorelasi, ditolak jika p < 0,05), yang artinya ", ifelse(a$dw_p >= 0.05, "tidak terdapat autokorelasi sehingga asumsi independensi terpenuhi.", paste0("terdapat autokorelasi ", ifelse(a$dw_stat < 2, "positif", "negatif"), " sehingga asumsi independensi tidak terpenuhi.", tambahan)))) })
+
+  # Ringkasan empat uji asumsi klasik
+  output$tabel_asumsi <- renderDT({ a <- asumsi(); g <- vif(model()); vmax <- if (is.matrix(g)) max(g[, 3]^2) else max(g); ok <- function(p) ifelse(p >= 0.05, "Terpenuhi", "Tidak terpenuhi"); tb <- data.frame(Asumsi = c("Normalitas", "Normalitas", "Multikolinearitas", "Homoskedastisitas", "Homoskedastisitas", "Autokorelasi"), Uji = c("Shapiro-Wilk", "Kolmogorov-Smirnov", paste0("VIF terbesar = ", round(vmax, 2)), "Breusch-Pagan", "Glejser", paste0("Durbin-Watson (DW = ", round(a$dw_stat, 2), ")")), p_value = c(a$sw, a$ks, NA, a$bp, a$gl, a$dw_p), Kesimpulan = c(ok(a$sw), ok(a$ks), ifelse(vmax <= 10, "Terpenuhi", "Tidak terpenuhi"), ok(a$bp), ok(a$gl), ok(a$dw_p))); tb$p_value <- ifelse(is.na(tb$p_value), "-", ifelse(tb$p_value < 0.001, "< 0.001", as.character(round(tb$p_value, 3)))); datatable(tb, options = list(dom = "t"), rownames = FALSE) })
+  output$tafsir_asumsi <- renderUI({ a <- asumsi(); g <- vif(model()); vmax <- if (is.matrix(g)) max(g[, 3]^2) else max(g); kotak("Ringkasan Uji Asumsi Klasik", paste0("Berdasarkan tabel di atas, dari empat uji asumsi klasik, normalitas ", ifelse(a$normal_ok, "terpenuhi", "tidak terpenuhi"), ", multikolinearitas ", ifelse(vmax <= 10, "terpenuhi", "tidak terpenuhi"), ", homoskedastisitas ", ifelse(a$homo_ok, "terpenuhi", "tidak terpenuhi"), ", dan autokorelasi ", ifelse(a$dw_p >= 0.05, "terpenuhi", "tidak terpenuhi"), ", yang artinya ", ifelse(a$normal_ok && a$homo_ok && vmax <= 10 && a$dw_p >= 0.05, "model memenuhi seluruh asumsi klasik.", "ada asumsi yang tidak terpenuhi dan dicatat sebagai keterbatasan model."))) })
+
+  # Variabel yang berpengaruh (uji F parsial tiap variabel, Type II)
+  pengaruh <- reactive({ an <- as.data.frame(car::Anova(model(), type = 2)); sse <- an["Residuals", "Sum Sq"]; an <- an[rownames(an) != "Residuals", ]; nm <- c(ln_land = "ln(Luas tanah)", ln_bld = "ln(Luas bangunan)", city = "Kota", certificate = "Sertifikat"); tb <- data.frame(Variabel = unname(nm[rownames(an)]), Df = an[["Df"]], F_hitung = round(an[["F value"]], 2), p_value = an[["Pr(>F)"]], Kontribusi_Parsial_Persen = round(100 * an[["Sum Sq"]] / (an[["Sum Sq"]] + sse), 1), row.names = NULL); tb[order(-tb$Kontribusi_Parsial_Persen), ] })
+  output$tabel_pengaruh <- renderDT({ tb <- pengaruh(); tb$Kesimpulan <- ifelse(tb$p_value < 0.05, "Berpengaruh signifikan", "Tidak signifikan"); tb$p_value <- ifelse(tb$p_value < 0.001, "< 0.001", as.character(round(tb$p_value, 3))); datatable(tb, options = list(dom = "t"), rownames = FALSE) })
+  output$tafsir_pengaruh <- renderUI({ tb <- pengaruh(); m <- model(); cf <- summary(m)$coefficients; b <- coef(m); ik <- startsWith(rownames(cf), "city"); isr <- startsWith(rownames(cf), "certificate"); kota_ns <- sub("^city", "", rownames(cf)[ik & cf[, 4] >= 0.05]); sert_ns <- sub("^certificate", "", rownames(cf)[isr & cf[, 4] >= 0.05]); ns <- tb$Variabel[tb$p_value >= 0.05]; kotak("Variabel yang Berpengaruh", paste0("Berdasarkan tabel di atas, variabel yang paling berpengaruh terhadap harga adalah ", tb$Variabel[1], " (kontribusi parsial ", tb$Kontribusi_Parsial_Persen[1], "%), diikuti ", tb$Variabel[2], " (", tb$Kontribusi_Parsial_Persen[2], "%) dan ", tb$Variabel[3], " (", tb$Kontribusi_Parsial_Persen[3], "%), ", ifelse(length(ns) == 0, "dan seluruh variabel berpengaruh signifikan pada α = 5%", paste0("namun ", paste(ns, collapse = ", "), " tidak berpengaruh signifikan")), ", yang artinya harga rumah terutama ditentukan oleh ", tb$Variabel[1], " dan ", tb$Variabel[2], ". Luas bangunan dan luas tanah berpengaruh ", ifelse(all(b[c("ln_bld", "ln_land")] > 0), "positif", "dengan arah berbeda"), " terhadap harga.", ifelse(length(kota_ns) > 0, paste0(" Kota yang harganya tidak berbeda nyata dari ", m$xlevels$city[1], ": ", paste(kota_ns, collapse = ", "), "."), " Semua kota harganya berbeda nyata dari kota acuan."), ifelse(length(sert_ns) > 0, paste0(" Sertifikat yang tidak berbeda nyata dari ", m$xlevels$certificate[1], ": ", paste(sert_ns, collapse = ", "), "."), " Semua jenis sertifikat berbeda nyata dari sertifikat acuan."))) })
+
   upaya <- reactive({
     m <- model(); d <- model.frame(m); n <- nrow(d); a <- asumsi()
     rumus <- ln_price ~ ln_land + ln_bld + city + certificate
@@ -992,21 +998,21 @@ server <- function(input, output, session) {
     }
     cf0 <- summary(m)$coefficients
     b_bld <- cf0["ln_bld", 1]
-    
+
     rb <- lmtest::coeftest(m, vcov = sandwich::vcovHC(m, type = "HC3"))
     sig0 <- sum(cf0[-1, 4] < 0.05); sig1 <- sum(rb[-1, 4] < 0.05)
-    
+
     buang <- cooks.distance(m) > 4 / n
     m2 <- lm(rumus, data = droplevels(d[!buang, ]))
     u2 <- uji(m2)
-    
+
     m3 <- lm(ln_price ~ ln_land + ln_bld * city + certificate, data = d)
     u3 <- uji(m3)
     p_int <- anova(m, m3)[2, "Pr(>F)"]
-    
+
     m4 <- suppressWarnings(MASS::rlm(rumus, data = d, maxit = 50))
     b4 <- unname(coef(m4)["ln_bld"])
-    
+
     pf2 <- function(p) ifelse(p < 0.001, "< 0.001", as.character(round(p, 3)))
     tb <- data.frame(
       Upaya = c("Model awal", "1. Galat baku robust HC3", "2. Buang titik berpengaruh (Cook's D)",
@@ -1021,28 +1027,28 @@ server <- function(input, output, session) {
         paste0("Interaksi ", ifelse(p_int < 0.05, "nyata", "tidak nyata"), " (", p_txt(p_int), ")."),
         paste0("Elastisitas bangunan ", round(b4, 2), " (OLS ", round(b_bld, 2), "). Tahan terhadap residual ekstrem.")),
       row.names = NULL)
-    
+
     lolos <- c()
     if (u2["sw"] >= 0.05 && u2["bp"] >= 0.05) lolos <- c(lolos, "membuang titik berpengaruh")
     if (u3["sw"] >= 0.05 && u3["bp"] >= 0.05) lolos <- c(lolos, "menambah interaksi")
     list(tb = tb, lolos = lolos, sig0 = sig0, sig1 = sig1, b_bld = b_bld, b4 = b4,
          jml = nrow(cf0) - 1, n = n)
   })
-  
+
   output$sebab_asumsi <- renderUI({
     res <- residuals(model()); n <- length(res)
     tags$ul(
       tags$li(strong("Data besar:"), paste0(" n = ", comma(n), ". Uji formal sangat sensitif, penyimpangan kecil pun menghasilkan p < 0.001.")),
       tags$li(strong("Residual berekor berat:"), paste0(" skewness ", round(skew(res), 2), " dan kurtosis berlebih ", round(kurt(res), 2),
-                                                        ". Ada iklan dengan harga tidak sepadan ukurannya (harga penawaran, bukan transaksi).")),
+              ". Ada iklan dengan harga tidak sepadan ukurannya (harga penawaran, bukan transaksi).")),
       tags$li(strong("Ragam tidak konstan:"), " kondisi rumah, jumlah kamar, dan kecamatan tidak ada di data, dan satu kota mencakup area murah sampai mewah, sehingga sebaran galat berbeda antar rumah."),
-      tags$li(strong("Durbin-Watson:"), " tidak relevan karena data cross-section, urutan baris tidak bermakna waktu."))
+      tags$li(strong("Durbin-Watson:"), " data cross-section sehingga urutan baris bukan urutan waktu; nilainya dibaca sebagai efek urutan baris data."))
   })
-  
+
   output$tabel_upaya <- renderDT({
     datatable(upaya()$tb, options = list(dom = "t", scrollX = TRUE), rownames = FALSE)
   })
-  
+
   output$tafsir_upaya <- renderUI({
     u <- upaya()
     awal <- if (length(u$lolos) > 0)
@@ -1057,8 +1063,8 @@ server <- function(input, output, session) {
                  ifelse(abs(u$b4 - u$b_bld) < 0.05, "hampir sama", "berbeda"),
                  ". Pelanggaran asumsi dilaporkan sebagai keterbatasan, bukan disembunyikan."))
   })
-  
-  # R1 (Original Color)
+
+  # R1
   output$r1 <- renderPlotly({
     d <- data_f(); d$fitted <- fitted(model())
     p <- ggplot(d, aes(x = fitted, y = ln_price)) +
@@ -1072,8 +1078,8 @@ server <- function(input, output, session) {
     kotak("Aktual vs Prediksi",
           paste0("Berdasarkan grafik di atas, plot ini digunakan untuk membandingkan nilai aktual dengan nilai prediksi model regresi. Visualisasi ini menunjukkan sebaran titik yang rapat mengikuti garis diagonal dengan nilai R² = ", r2, ", yang artinya model mampu merepresentasikan variasi harga dengan tingkat ketepatan yang baik."))
   })
-  
-  # R2 (Original Color)
+
+  # R2
   output$r2 <- renderPlotly({
     d <- data.frame(fitted = fitted(model()), resid = residuals(model()))
     p <- ggplot(d, aes(x = fitted, y = resid)) +
@@ -1087,8 +1093,8 @@ server <- function(input, output, session) {
     kotak("Residual vs Fitted",
           paste0("Berdasarkan grafik di atas, plot ini digunakan untuk menguji asumsi homoskedastisitas (kesamaan ragam galat). Visualisasi ini menunjukkan hasil uji Breusch-Pagan dengan p-value = ", p_txt(a$bp), ", yang artinya ", ifelse(a$bp < 0.05, "terdapat indikasi ragam galat yang tidak konstan (heteroskedastisitas).", "ragam galat relatif konstan dan asumsi homoskedastisitas terpenuhi.")))
   })
-  
-  # R3 (Original Color)
+
+  # R3
   output$r3 <- renderPlotly({
     d <- data.frame(resid = residuals(model()))
     p <- ggplot(d, aes(x = resid)) +
@@ -1104,8 +1110,8 @@ server <- function(input, output, session) {
     kotak("Histogram Residual",
           paste0("Berdasarkan grafik di atas, histogram ini digunakan untuk melihat bentuk distribusi sisaan (residual) model terhadap kurva normal. Visualisasi ini menunjukkan nilai skewness ", sk, " dan kurtosis berlebih ", kur, ", yang artinya galat model memiliki bentuk sebaran tertentu yang akan divalidasi lebih lanjut melalui uji normalitas formal."))
   })
-  
-  # R4 (Original Color)
+
+  # R4
   output$r4 <- renderPlotly({
     res <- as.numeric(residuals(model())); res <- res[is.finite(res)]
     qq <- qqnorm(res, plot.it = FALSE); df_qq <- data.frame(Teoritis = as.numeric(qq$x), Residual = as.numeric(qq$y))
@@ -1120,8 +1126,8 @@ server <- function(input, output, session) {
     kotak("Q-Q Plot Normalitas Residual",
           paste0("Berdasarkan grafik di atas, Q-Q plot ini digunakan untuk memeriksa kenormalan sisaan model regresi secara visual. Visualisasi ini menunjukkan bahwa titik-titik ", ifelse(a$normal_ok, "mengikuti garis referensi merah dengan uji Shapiro-Wilk ", "menjauhi garis referensi di kedua ujung dengan uji Shapiro-Wilk "), p_txt(a$sw), ", yang artinya asumsi normalitas galat ", ifelse(a$normal_ok, "terpenuhi.", "tidak terpenuhi karena ekor sisaan yang lebih tebal dari normal.")))
   })
-  
-  # R5 (Original Color)
+
+  # R5
   output$r5 <- renderPlotly({
     m <- model(); ci <- confint(m)
     df <- data.frame(Variabel = nama_koef(rownames(ci), m), Koef = coef(m), bawah = ci[, 1], atas = ci[, 2], row.names = NULL)
@@ -1139,7 +1145,7 @@ server <- function(input, output, session) {
     kotak("Selang Kepercayaan Koefisien",
           paste0("Berdasarkan grafik di atas, plot interval ini digunakan untuk melihat signifikansi masing-masing koefisien prediktor melalui selang kepercayaan 95%. Visualisasi ini menunjukkan bahwa sebanyak ", n_sig, " dari ", nrow(ci), " koefisien tidak memotong garis nol, yang artinya prediktor-prediktor tersebut berpengaruh nyata secara statistik terhadap harga rumah."))
   })
-  
+
   output$teks_batas <- renderUI({
     a <- asumsi()
     tags$ul(
@@ -1151,9 +1157,9 @@ server <- function(input, output, session) {
       tags$li("Pencilan dan data tidak valid dibuang, sehingga model tidak berlaku untuk rumah super mewah atau sangat murah."),
       tags$li("Sekitar 26,8% baris data awal punya nilai identik pada lima variabel (kemungkinan sebagian iklan ganda) dan tidak bisa dibedakan, sehingga sebagian pengamatan mungkin tidak independen."),
       if (!(a$normal_ok && a$homo_ok)) tags$li("Asumsi normalitas dan/atau homoskedastisitas tidak terpenuhi, sehingga p-value dan selang kepercayaan dibaca hati-hati."),
-      tags$li("Autokorelasi tidak dijadikan kesimpulan karena data cross-section."))
+      if (a$dw_p < 0.05) tags$li("Durbin-Watson menunjukkan autokorelasi pada urutan baris data; baris tersusun berkelompok menurut kota (bukan menurut waktu), sehingga ini efek urutan baris dan bukan autokorelasi waktu.") else tags$li("Autokorelasi tidak terdeteksi pada urutan baris data."))
   })
-  
+
   # Tab 7: Kesimpulan
   output$teks_kesimpulan <- renderUI({
     d <- data_f(); m <- model(); s <- summary(m); cf <- s$coefficients; a <- asumsi()
@@ -1178,19 +1184,19 @@ server <- function(input, output, session) {
         tags$li("Penjual/agen: tetapkan harga dengan acuan luas bangunan dan lokasi, lalu sesuaikan status sertifikat."),
         tags$li("Penelitian lanjutan: tambahkan jumlah kamar, kondisi rumah, dan kecamatan; coba model robust atau interaksi kota x luas.")))
   })
-  
+
   # Tab 8: Unduh
   output$unduh_data <- downloadHandler(
     filename = function() paste0("jabodetabek_data_bersih_", Sys.Date(), ".csv"),
     content  = function(file) write.csv(data_f(), file, row.names = FALSE))
-  
+
   output$unduh_desk <- downloadHandler(
     filename = function() paste0("statistik_deskriptif_", Sys.Date(), ".csv"),
     content  = function(file) {
       x <- data_f() %>% select(price_miliar, land_size_m2, building_size_m2)
       write.csv(data.frame(Variabel = names(x), Mean = sapply(x, mean), Median = sapply(x, median), Std_Dev = sapply(x, sd)), file, row.names = FALSE)
     })
-  
+
   output$unduh_reg <- downloadHandler(
     filename = function() paste0("koefisien_regresi_", Sys.Date(), ".csv"),
     content  = function(file) write.csv(as.data.frame(summary(model())$coefficients), file, row.names = TRUE))
